@@ -21,7 +21,6 @@ import Foreign.C.Error (Errno(..), getErrno)
 import Foreign.C.String (CString, newCString, withCAString, peekCAString, peekCString)
 import Foreign.C.Types (CFile, CInt(..), CSize, CChar, CLong)
 import System.IO (Handle, stdin, stdout, stderr)
-import System.Posix.IO (handleToFd)
 import System.Posix.Types (Fd(..))
 
 #include <librdkafka/rdkafka.h>
@@ -1170,17 +1169,4 @@ peekPtr = peek . castPtr
 
 -- Handle -> File descriptor
 
-foreign import ccall "" fdopen :: Fd -> CString -> IO (Ptr CFile)
 
-handleToCFile :: Handle -> String -> IO (CFilePtr)
-handleToCFile h m =
- do iomode <- newCString m
-    fd <- handleToFd h
-    fdopen fd iomode
-
-c_stdin :: IO CFilePtr
-c_stdin = handleToCFile stdin "r"
-c_stdout :: IO CFilePtr
-c_stdout = handleToCFile stdout "w"
-c_stderr :: IO CFilePtr
-c_stderr = handleToCFile stderr "w"
